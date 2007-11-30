@@ -20,7 +20,7 @@ def connect_screensaver(session_bus)
 end
 
 def connect_pidgin(session_bus)
-    # Get the Rhythmbox service
+    # Get the pidgin service
     pidgin_dbus = session_bus.service("im.pidgin.purple.PurpleService")
     
     # Get the object from this service
@@ -85,7 +85,6 @@ ss.on_signal("ActiveChanged") {|s|
         unmute
     end
 }
-
 
 netman.on_signal(bus, "DeviceNowActive") { 
     recycle_pidgin(pidgin) 
