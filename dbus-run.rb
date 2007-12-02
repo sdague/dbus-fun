@@ -20,6 +20,7 @@ ss = connect_screensaver(session_bus)
 ss.on_signal("ActiveChanged") {|s|
     if s
         mute
+        set_away(pidgin)
     else
         unmute
     end
