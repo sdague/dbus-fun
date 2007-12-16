@@ -14,16 +14,29 @@ def recycle_pidgin(pidgin)
     end
 end
 
+def set_active(pidgin)
+    puts "trying to set active"
+    name = "Available"
+    status = pidgin.PurpleSavedstatusGetCurrent[0]
+    if pidgin.PurpleSavedstatusGetType(status) != 2
+        set_status(pidgin, 2, name, "")
+    end
+end
+
 def set_away(pidgin)
     puts "trying to set away"
     name = "screensaver"
+    msg = "screen saver auto away"
+    set_status(pidgin, 5, name, msg)
+end
+
+def set_status(pidgin, type, name, message)
     status = pidgin.PurpleSavedstatusFind(name)[0]
     if not status > 0
-        status = pidgin.PurpleSavedstatusNew(name, 5)[0]
+        status = pidgin.PurpleSavedstatusNew(name, type)[0]
     end
-    puts "Status #{status}"
-
-    pidgin.PurpleSavedstatusSetMessage(status, "screen saver auto away")
+    
+    pidgin.PurpleSavedstatusSetMessage(status, message)
     pidgin.PurpleSavedstatusActivate(status)
 end
 

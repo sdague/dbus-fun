@@ -11,6 +11,11 @@ session_bus = DBus::SessionBus.instance
 netman = connect_netman(bus)
 pidgin = connect_pidgin(session_bus)
 ss = connect_screensaver(session_bus)
+
+pidgin.on_signal("WroteImMsg") { |a, b, c, d|
+    set_active(pidgin)
+}
+
 # pidgin.on_signal("WroteImMsg") { |a, b, c, d|
 #     pp a
 #     pp b
