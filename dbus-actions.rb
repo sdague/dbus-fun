@@ -18,7 +18,8 @@ def set_active(pidgin)
     puts "trying to set active"
     name = "Available"
     status = pidgin.PurpleSavedstatusGetCurrent[0]
-    if pidgin.PurpleSavedstatusGetType(status) != 2
+    if pidgin.PurpleSavedstatusGetType(status)[0] != 2
+        puts "setting status active"
         set_status(pidgin, 2, name, "")
     end
 end
@@ -27,7 +28,10 @@ def set_away(pidgin)
     puts "trying to set away"
     name = "screensaver"
     msg = "screen saver auto away"
-    set_status(pidgin, 5, name, msg)
+    status = pidgin.PurpleSavedstatusGetCurrent[0]
+    if pidgin.PurpleSavedstatusGetType(status)[0] != 5
+        set_status(pidgin, 5, name, msg)
+    end
 end
 
 def set_status(pidgin, type, name, message)
