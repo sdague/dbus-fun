@@ -12,9 +12,29 @@ netman = connect_netman(bus)
 pidgin = connect_pidgin(session_bus)
 ss = connect_screensaver(session_bus)
 
-pidgin.on_signal("SentImMsg") {
-    set_active(pidgin)
+pidgin.on_signal("AccountStatusChanged") { |id, status, reason|
+    # puts "AccountStatusChanged"
+    # this appears to be user changed
+    if reason == 1293
+        status = pidgin.PurpleStatusGetAttrString(status, "message")[0]
+        if status != "" and status != @@msg
+            puts "Pushing '#{status}' to twitter"
+            @@twitter.post(status)
+            @@msg = status
+        end
+    end
 }
+
+pidgin.on_signal("SentImMsg") { |id, who, msg|
+    if who == "twitter@twitter.com" and !(msg =~ /^(invite|off|track|help|follow|whois|d \w+|whois)/)
+        puts "setting twitter status"
+        set_status(pidgin, 2, "Available", msg)
+    else
+        set_active(pidgin)
+    end
+    puts "#{id} - #{who}: #{msg}"
+}
+
 
 # pidgin.on_signal("WroteImMsg") { |a, b, c, d|
 #     pp a
@@ -32,8 +52,8 @@ ss.on_signal("ActiveChanged") {|s|
 }
 
 netman.on_signal(bus, "DeviceNowActive") { |d, n|
-    dev = connect_netdev(bus, d)
-    puts "0x%08x" % dev.getIP4Address
+    #dev = connect_netdev(bus, d)
+    #puts "0x%08x" % dev.getIP4Address
     pp d
     pp n
     recycle_pidgin(pidgin) 

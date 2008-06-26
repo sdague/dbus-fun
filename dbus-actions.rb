@@ -1,8 +1,18 @@
 #!/usr/bin/ruby
 
+require "rubygems"
 require "dbus"
+require "twitter"
+require "yaml"
+require "pp"
 
 @@vol = 0
+@@msg = ""
+config = YAML.load_file("accounts.yaml")
+pp config
+@@user = config["twitter"]["user"]
+
+@@twitter = Twitter::Base.new(@@user, config["twitter"]["passwd"])
 
 def recycle_pidgin(pidgin)
     accounts = pidgin.PurpleAccountsGetAll
@@ -15,22 +25,33 @@ def recycle_pidgin(pidgin)
 end
 
 def set_active(pidgin)
+    begin
+        @@msg = @@twitter.user(@@user).status.text
+    rescue
+	puts $!
+    end
     puts "trying to set active"
     name = "Available"
     status = pidgin.PurpleSavedstatusGetCurrent[0]
     if pidgin.PurpleSavedstatusGetType(status)[0] != 2
         puts "setting status active"
-        set_status(pidgin, 2, name, "")
+        set_status(pidgin, 2, name, @@msg)
     end
 end
 
 def set_away(pidgin)
+    begin
+        @@msg = @@twitter.user(@@user).status.text
+    rescue
+        puts $!
+    end
+
     puts "trying to set away"
     name = "screensaver"
-    msg = "screen saver auto away"
     status = pidgin.PurpleSavedstatusGetCurrent[0]
     if pidgin.PurpleSavedstatusGetType(status)[0] != 5
-        set_status(pidgin, 5, name, msg)
+        # @@msg = pidgin.PurpleSavedstatusGetMessage(status)[0]
+        set_status(pidgin, 5, name, @@msg)
     end
 end
 
@@ -55,7 +76,7 @@ end
 
 
 def mute()
-    IO.popen("aumix -vq") {|r|
+    IO.popen("aumix -wq") {|r|
         r.read.scan(/(\d+)/) {|m|
             @@vol = m
             puts "saved volume: #{@@vol}"
@@ -63,10 +84,10 @@ def mute()
         }
     }
     puts "muting"
-    system("aumix -v 0")
+    system("aumix -w 0")
 end
 
 def unmute()
     puts "unmuting"
-    system("aumix -v #{@@vol}")
+    system("aumix -w #{@@vol}")
 end
