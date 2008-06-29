@@ -1,3 +1,4 @@
 twitter:
-   user: yourtwittername
+   me: yourtwittername
+   user: yourtwitteraccount
    passwd: yourtwitterpasswd

@@ -9,8 +9,8 @@ require "pp"
 @@vol = 0
 @@msg = ""
 config = YAML.load_file("accounts.yaml")
-pp config
 @@user = config["twitter"]["user"]
+@@me = config["twitter"]["me"]
 
 @@twitter = Twitter::Base.new(@@user, config["twitter"]["passwd"])
 
@@ -26,9 +26,9 @@ end
 
 def set_active(pidgin)
     begin
-        @@msg = @@twitter.user(@@user).status.text
-    rescue
-	puts $!
+        @@msg = @@twitter.user(@@me).status.text
+    rescue => e
+	puts "#{$!} => #{e}"
     end
     puts "trying to set active"
     name = "Available"
@@ -41,9 +41,9 @@ end
 
 def set_away(pidgin)
     begin
-        @@msg = @@twitter.user(@@user).status.text
-    rescue
-        puts $!
+        @@msg = @@twitter.user(@@me).status.text
+    rescue => e
+	puts "#{$!} => #{e}"
     end
 
     puts "trying to set away"
