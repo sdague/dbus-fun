@@ -18,9 +18,13 @@ pidgin.on_signal("AccountStatusChanged") { |id, status, reason|
     if reason == 1293
         status = pidgin.PurpleStatusGetAttrString(status, "message")[0]
         if status != "" and status != @@msg
-            puts "Pushing '#{status}' to twitter"
-            @@twitter.post(status)
-            @@msg = status
+            begin
+                puts "Pushing '#{status}' to twitter"
+                @@twitter.post(status)
+                @@msg = status
+            rescue => e
+                puts "#{$!} => #{e}"
+            end
         end
     end
 }
