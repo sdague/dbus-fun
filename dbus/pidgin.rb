@@ -71,20 +71,28 @@ module DBUS
         end
         
         def away!
-            s = status
+            s = self.status
             if not s.away?
                 s.type = PIDGIN_AWAY
-                status = s
-            end
+                s.name = "Away"
+                self.status = s
+             end
         end
 
         def active!
-            s = status
+            s = self.status
             if not s.active?
                 s.type = PIDGIN_ACTIVE
-                status = s
-            end
+                s.name = "Available"
+                self.status = s
+             end
         end
+
+        # if there is anything we haven't caught yet, just pass it on down
+        def method_missing(sym, *args, &block)
+            @conn.send sym, *args, &block
+        end
+
     end
     
     class Pidgin::Status

@@ -1,7 +1,22 @@
 require "twitter"
 module DBUS
     class Status
+        @services = nil
+        def initialize()
+            @services = [
+                        Status::Twitter.new("accounts.yaml")
+                       ]
+        end
         
+        def status=(s)
+            @services.each do |svr|
+                svr.status = s
+            end
+        end
+        
+        def status
+            return @services[0].status
+        end
     end
     
     class Status::Twitter

@@ -13,22 +13,6 @@ def connect_screensaver(session_bus)
     return ss
 end
 
-def connect_pidgin(session_bus)
-    # Get the pidgin service
-    pidgin_dbus = session_bus.service("im.pidgin.purple.PurpleService")
-    
-    # Get the object from this service
-    pidgin = pidgin_dbus.object("/im/pidgin/purple/PurpleObject")
-    
-    # Introspect it
-    pidgin.introspect
-    if pidgin.has_iface? "im.pidgin.purple.PurpleInterface"
-        pidgin.default_iface = "im.pidgin.purple.PurpleInterface"
-        puts "We have Pidgin interface"
-    end
-    return pidgin
-end
-
 def connect_netman(bus)
     n_dbus = bus.service("org.freedesktop.NetworkManager")
     netman = n_dbus.object("/org/freedesktop/NetworkManager")
