@@ -1,6 +1,8 @@
 #!/usr/bin/ruby
 
+require "rubygems"
 require "dbus"
+require "twitter"
 require "pp"
 require "dbus/pidgin"
 require "dbus/status"
@@ -64,7 +66,8 @@ screensaver.on_signal("ActiveChanged") {|state|
     end
 }
 
-netman.on_signal(bus, "DeviceNowActive") { |d, n|
+netman.on_signal(system_bus, "DeviceNowActive") { |d, n|
+    puts "Device now active #{d} #{n}"
     pidgin.reconnect
 }
 

@@ -1,5 +1,5 @@
 module DBUS
-    class SreenSaver
+    class ScreenSaver
         @conn = nil
         @vol = 0
         def initialize(bus)

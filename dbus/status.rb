@@ -1,4 +1,5 @@
 require "twitter"
+
 module DBUS
     class Status
         @services = nil
