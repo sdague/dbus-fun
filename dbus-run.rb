@@ -2,32 +2,34 @@
 
 require "dbus"
 require "pp"
-require "dbus-connect"
-require "dbus-actions"
 require "dbus/pidgin"
 require "dbus/status"
+require "dbus/screensaver"
+require "dbus/network"
 
-bus = DBus::SystemBus.instance
+system_bus = DBus::SystemBus.instance
 session_bus = DBus::SessionBus.instance
+
 pidgin = DBUS::Pidgin.new(session_bus)
 online = DBUS::Status.new()
+netman = DBUS::Network.new(system_bus)
+screensaver = DBUS::ScreenSaver.new(session_bus)
 
-@@msg = pidgin.status.msg
-
-netman = connect_netman(bus)
-ss = connect_screensaver(session_bus)
+@@msg = online.status
+if not @@msg
+    @@msg = pidgin.status.msg
+end
 
 pidgin.on_signal("AccountStatusChanged") { |id, status, reason|
     puts "AccountStatusChanged"
     puts "Reason = #{reason}"
     # this appears to be user changed
-#    if reason == 1293
-        s = pidgin.status
-        if s.msg != "" and s.msg != @@msg
-            online.status = s.msg
-            @@msg = s.msg
-        end
- #   end
+    #    if reason == 1293
+    s = pidgin.status
+    if s.msg != "" and s.msg != @@msg
+        online.status = s.msg
+        @@msg = s.msg
+    end
 }
 
 pidgin.on_signal("SentImMsg") { |id, who, msg| 
@@ -52,25 +54,21 @@ pidgin.on_signal("SentImMsg") { |id, who, msg|
 #     pp c
 #     pp d
 # }
-ss.on_signal("ActiveChanged") {|s|
-    if s
-        mute
+
+screensaver.on_signal("ActiveChanged") {|state|
+    if state
+        screensaver.mute
         pidgin.away!
     else
-        unmute
+        screensaver.unmute
     end
 }
 
 netman.on_signal(bus, "DeviceNowActive") { |d, n|
     pidgin.reconnect
-    #dev = connect_netdev(bus, d)
-    #puts "0x%08x" % dev.getIP4Address
-    #pp d
-    #pp n
-    # recycle_pidgin(pidgin) 
 }
 
 main = DBus::Main.new
-main << bus
+main << system_bus
 main << session_bus
 main.run
