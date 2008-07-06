@@ -61,26 +61,47 @@ module DBUS
         end
         
         def status=(s)
-            puts "foo"
+            status = @conn.PurpleSavedstatusFind(s.name)[0]
+            if not status > 0
+                status = @conn.PurpleSavedstatusNew(s.name, s.type)[0]
+            end
+            
+            @conn.PurpleSavedstatusSetMessage(status, s.msg)
+            @conn.PurpleSavedstatusActivate(status)
+        end
+        
+        def away!
+            s = status
+            if not s.away?
+                s.type = PIDGIN_AWAY
+                status = s
+            end
+        end
+
+        def active!
+            s = status
+            if not s.active?
+                s.type = PIDGIN_ACTIVE
+                status = s
+            end
         end
     end
     
     class Pidgin::Status
-        @msg
-        @status
-        @name
-        def initialize(msg="", status=PIDGIN_ACTIVE, name="Pidgin::Status")
+        attr_accessor :msg, :type, :name
+
+        def initialize(msg="", type=PIDGIN_ACTIVE, name="Pidgin::Status")
             @msg = msg
-            @status = status
+            @type = type
             @name = name
         end
 
         def away?
-            return @status == PIDGIN_AWAY
+            return @type == PIDGIN_AWAY
         end
         
         def active?
-            return @status == PIDGIN_ACTIVE
+            return @type == PIDGIN_ACTIVE
         end
         
     end
