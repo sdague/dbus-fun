@@ -20,7 +20,12 @@ screensaver = DBUS::ScreenSaver.new(session_bus)
 @@msg = online.status
 if not @@msg
     @@msg = pidgin.status.msg
+else
+    s = pidgin.status
+    s.msg = @@msg
+    pidgin.status = s
 end
+
 
 pidgin.on_signal("AccountStatusChanged") { |id, status, reason|
     puts "AccountStatusChanged"
@@ -35,6 +40,16 @@ pidgin.on_signal("AccountStatusChanged") { |id, status, reason|
 }
 
 pidgin.on_signal("SentImMsg") { |id, who, msg| 
+    begin 
+        pp pidgin.status
+        if pidgin.away?
+            puts "Setting status"
+            s = pidgin.status
+            s.msg = online.status
+            pidgin.status = s
+        end
+    rescue => e
+    end
     puts "#{id} - #{who}: #{msg}"
     pidgin.active!
 }
