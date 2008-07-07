@@ -69,6 +69,18 @@ module DBUS
             @conn.PurpleSavedstatusSetMessage(status, s.msg)
             @conn.PurpleSavedstatusActivate(status)
         end
+
+        def send_im(from, to, msg)
+            begin 
+                account = @conn.PurpleAccountsFind(from,"")[0]
+                conv = @conn.PurpleConversationNew(1, account, to)[0]
+                im = @conn.PurpleConvIm(conv)[0]
+                @conn.PurpleConvImSend(im, msg)
+                @conn.PurpleConversationDestroy(conv)
+            rescue => e
+                puts "#{$!} => #{e}"
+            end
+        end
         
         def away!
             s = self.status

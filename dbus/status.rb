@@ -3,9 +3,10 @@ require "twitter"
 module DBUS
     class Status
         @services = nil
-        def initialize()
+        def initialize(pidgin, file)
             @services = [
-                        Status::Twitter.new("accounts.yaml")
+                         Status::Twitter.new(file),
+                         Status::Identica.new(pidgin, file)
                        ]
         end
         
@@ -17,6 +18,20 @@ module DBUS
         
         def status
             return @services[0].status
+        end
+    end
+
+    class Status::Identica
+        @account = ""
+        @pidgin = nil
+        def initialize(pidgin, file)
+            config = YAML.load_file(file)
+            @account = config["identica"]["user"]
+            @pidgin = pidgin
+        end
+        
+        def status=(s)
+            @pidgin.send_im(@account, "update@identi.ca", s)
         end
     end
     
