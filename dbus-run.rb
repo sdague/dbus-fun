@@ -49,8 +49,7 @@ def run()
         begin 
             if pidgin.status.type == PIDGIN_AWAY
                 puts "Setting status"
-                pidgin.active!
-                pidgin.status_msg(online.status)
+                pidgin.active!(online.status)
             end
         rescue => e      
             puts "#{$!} => #{e}"

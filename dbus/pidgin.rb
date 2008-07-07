@@ -88,20 +88,26 @@ module DBUS
             end
         end
         
-        def away!
+        def away!(msg=nil)
             s = self.status
             if not s.away?
                 s.type = PIDGIN_AWAY
                 s.name = "Away"
+                if msg
+                    s.msg = msg
+                end
                 self.status = s
              end
         end
 
-        def active!
+        def active!(msg=nil)
             s = self.status
             if not s.active?
                 s.type = PIDGIN_ACTIVE
                 s.name = "Available"
+                if msg
+                    s.msg = msg
+                end
                 self.status = s
              end
         end
