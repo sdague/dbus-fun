@@ -46,6 +46,12 @@ module DBUS
             end
         end
         
+        def status_msg(msg)
+            status = self.status
+            status.msg = msg
+            self.status = status
+        end
+        
         def status
             s = @conn.PurpleAccountGetActiveStatus(active_account)[0]
             # s = @conn.PurpleSavedstatusGetCurrent[0]

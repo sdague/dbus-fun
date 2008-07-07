@@ -34,8 +34,7 @@ pidgin.on_signal("AccountStatusChanged") { |id, status, reason|
     #    if reason == 1293
     s = pidgin.status
     if s.msg != "" and s.msg != @@msg
-        online.status = s.msg
-        @@msg = s.msg
+        sync_status(pidgin, online)
     end
 }
 
@@ -44,9 +43,7 @@ pidgin.on_signal("SentImMsg") { |id, who, msg|
         pp pidgin.status
         if pidgin.away?
             puts "Setting status"
-            s = pidgin.status
-            s.msg = online.status
-            pidgin.status = s
+            pidgin.status_msg(online.status)
         end
     rescue => e
     end
@@ -63,7 +60,6 @@ pidgin.on_signal("SentImMsg") { |id, who, msg|
 #     end
 #     puts "#{id} - #{who}: #{msg}"
 # }
-
 
 # pidgin.on_signal("WroteImMsg") { |a, b, c, d|
 #     pp a
@@ -84,7 +80,16 @@ screensaver.on_signal("ActiveChanged") {|state|
 netman.on_signal(system_bus, "DeviceNowActive") { |d, n|
     puts "Device now active #{d} #{n}"
     pidgin.reconnect
+    sync_status(pidgin, online)
 }
+
+def sync_status(pidgin, online)
+    begin 
+        @@msg = online.msg
+        pidgin.status_msg(@@msg)
+    rescue => e
+    end
+end
 
 main = DBus::Main.new
 main << system_bus
