@@ -46,8 +46,7 @@ def run()
 
     pidgin.on_signal("SentImMsg") { |id, who, msg| 
         begin 
-            pp pidgin.status
-            if pidgin.away?
+            if pidgin.status.type == PIDGIN_AWAY
                 puts "Setting status"
                 pidgin.status_msg(online.status)
             end
