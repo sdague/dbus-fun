@@ -45,16 +45,16 @@ def run()
     }
 
     pidgin.on_signal("SentImMsg") { |id, who, msg| 
+        puts "#{id} - #{who}: #{msg}"
         begin 
             if pidgin.status.type == PIDGIN_AWAY
                 puts "Setting status"
+                pidgin.active!
                 pidgin.status_msg(online.status)
             end
         rescue => e      
             puts "#{$!} => #{e}"
         end
-        puts "#{id} - #{who}: #{msg}"
-        pidgin.active!
     }
     
     # pidgin.on_signal("SentImMsg") { |id, who, msg|
