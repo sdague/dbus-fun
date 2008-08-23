@@ -6,6 +6,7 @@ PIDGIN_ACTIVE = 2
 module DBUS
     class Pidgin
         @conn = nil
+        @msg = ""
         
         def initialize(bus)
             # Get the pidgin service
@@ -47,6 +48,7 @@ module DBUS
         end
         
         def status_msg(msg)
+            @msg = msg
             status = self.status
             status.msg = msg
             self.status = status
@@ -71,6 +73,7 @@ module DBUS
         end
         
         def status=(s)
+            @msg = s.msg
             status = @conn.PurpleSavedstatusFind(s.name)[0]
             if not status > 0
                 status = @conn.PurpleSavedstatusNew(s.name, s.type)[0]
@@ -93,11 +96,10 @@ module DBUS
         end
         
         def away!(msg=nil)
-            s = Pidgin::Status.new(msg, PIDGIN_AWAY, "Away")
-            if not msg
-                s = self.status
-                s.type = PIDGIN_AWAY
+            if msg == nil
+                msg = @msg
             end
+            s = Pidgin::Status.new(msg, PIDGIN_AWAY, "Away")
             self.status = s
         end
 
