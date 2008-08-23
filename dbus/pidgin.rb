@@ -52,6 +52,10 @@ module DBUS
             self.status = status
         end
         
+        def set_status(msg)
+            self.status = Pidgin::Status.new(msg, PIDGIN_ACTIVE, "Available")
+        end
+        
         def status
             s = @conn.PurpleAccountGetActiveStatus(active_account)[0]
             # s = @conn.PurpleSavedstatusGetCurrent[0]
@@ -89,27 +93,21 @@ module DBUS
         end
         
         def away!(msg=nil)
-            s = self.status
-            if not s.away?
+            s = Pidgin::Status.new(msg, PIDGIN_AWAY, "Away")
+            if not msg
+                s = self.status
                 s.type = PIDGIN_AWAY
-                s.name = "Away"
-                if msg
-                    s.msg = msg
-                end
-                self.status = s
-             end
+            end
+            self.status = s
         end
 
         def active!(msg=nil)
-            s = self.status
-            if not s.active?
+            s = Pidgin::Status.new(msg, PIDGIN_ACTIVE, "Available")
+            if not msg
+                s = self.status
                 s.type = PIDGIN_ACTIVE
-                s.name = "Available"
-                if msg
-                    s.msg = msg
-                end
-                self.status = s
-             end
+            end
+            self.status = s
         end
 
         # if there is anything we haven't caught yet, just pass it on down

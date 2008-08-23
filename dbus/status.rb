@@ -17,7 +17,10 @@ module DBUS
         end
         
         def status
-            return @services[0].status
+            puts "Retrieving status"
+            a = @services[0].status
+            puts "Status: #{a}"
+            return a
         end
     end
 
@@ -53,6 +56,7 @@ module DBUS
             begin
                 puts "Retrieving twitter status"
                 msg = @conn.user(@me).status.text
+                puts "Status #{msg}"
             rescue => e
                 puts "#{$!} => #{e}"
             end
