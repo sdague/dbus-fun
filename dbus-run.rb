@@ -44,14 +44,6 @@ def run()
 # #         end
 #     }
     
-    pidgin.on_signal("WroteImMsg") { |id, who, msg, crap, direction|
-        puts "WroteImMsg: #{id} - #{who}: #{msg} #{crap} #{direction}"
-        if direction == 1 and who =~ /pingfm/ and !(msg =~ /^(Gotinvite|off|track|help|follow|whois|d \w+|whois)/)
-            puts "Displaying setting twitter status: #{msg}"
-            pidgin.active!(msg)
-        end
-    }
-    
     pidgin.on_signal("SentImMsg") { |id, who, msg| 
         s = pidgin.status
         puts "SendImMsg: #{id} - #{who}: #{msg}"
