@@ -47,7 +47,7 @@ def run()
     pidgin.on_signal("SentImMsg") { |id, who, msg| 
         s = pidgin.status
         puts "SendImMsg: #{id} - #{who}: #{msg}"
-        if who =~ /pingfm/
+        if who =~ /twitter.com/
             pidgin.active!(msg)
         elsif s.away?
             begin
@@ -87,9 +87,16 @@ def run()
         end
     }
     
-    netman.on_signal(system_bus, "DeviceNowActive") { |d, n|
-        puts "Device now active #{d} #{n}"
-        pidgin.reconnect
+    # This function isn't nearly as good as it was before because
+    # networkmanager 0.7 both got more useful (broadcasting lots more
+    # signals), and less useful, not providing a generic connection
+    # signal like it did before.
+    netman.on_signal(system_bus, "StateChanged") { |s|
+        puts "New state #{s}"
+        # this seems to be the magic state
+        if s == 3
+            pidgin.reconnect
+        end
         # sync_status(pidgin, online)
     }
 

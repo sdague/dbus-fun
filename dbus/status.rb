@@ -2,12 +2,15 @@ require "twitter"
 
 module DBUS
     class Status
-        @services = nil
+        @services = []
         def initialize(pidgin, file)
-            @services = [
-                         Status::Twitter.new(file),
-                         Status::Identica.new(pidgin, file)
-                       ]
+            @services = []
+            if s = Status::Twitter.new(file)
+                @services << s
+            end
+            if s = Status::Identica.new(pidgin, file)
+                @services << s
+            end
         end
         
         def status=(s)
@@ -45,10 +48,15 @@ module DBUS
         @conn = nil
         def initialize(file)
             config = YAML.load_file(file)
-            @user = config["twitter"]["user"]
-            @me = config["twitter"]["me"]
-            @passwd = config["twitter"]["passwd"]
-            @conn = Twitter::Base.new(@user, @passwd)
+            begin
+                @user = config["twitter"]["user"]
+                @me = config["twitter"]["me"]
+                @passwd = config["twitter"]["passwd"]
+                @conn = Twitter::Base.new(@user, @passwd)
+            rescue => e
+                puts "#{$!} => #{e}"
+                return nil
+            end
         end
         
         def status
@@ -64,6 +72,7 @@ module DBUS
         end
         
         def status=(s)
+            return
             begin
                 puts "Pushing '#{s}' to twitter"
                 @conn.post(s)
