@@ -47,7 +47,7 @@ def run()
     pidgin.on_signal("SentImMsg") { |id, who, msg| 
         s = pidgin.status
         puts "SendImMsg: #{id} - #{who}: #{msg}"
-        if who =~ /twitter.com/
+        if who =~ /sdague@twitter.tweet.im/
             pidgin.active!(msg)
         elsif s.away?
             begin
