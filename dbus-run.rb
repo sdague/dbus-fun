@@ -29,6 +29,8 @@ def run()
     pidgin = DBUS::Pidgin.new(session_bus)
     online = DBUS::Status.new(pidgin, "accounts.yaml")
     netman = DBUS::Network.new(system_bus)
+    
+
     screensaver = DBUS::ScreenSaver.new(session_bus)
     
     sync_status(pidgin, online)
@@ -47,7 +49,7 @@ def run()
     pidgin.on_signal("SentImMsg") { |id, who, msg| 
         s = pidgin.status
         puts "SendImMsg: #{id} - #{who}: #{msg}"
-        if who =~ /sdague@twitter.tweet.im/
+        if who =~ /twitter/ or who =~ /tweet.im/
             pidgin.active!(msg)
         elsif s.away?
             begin

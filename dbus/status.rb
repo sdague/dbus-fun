@@ -4,13 +4,14 @@ module DBUS
     class Status
         @services = []
         def initialize(pidgin, file)
+
             @services = []
             if s = Status::Twitter.new(file)
                 @services << s
             end
-            if s = Status::Identica.new(pidgin, file)
-                @services << s
-            end
+            # if s = Status::Identica.new(pidgin, file)
+            #     @services << s
+            # end
         end
         
         def status=(s)
@@ -52,7 +53,9 @@ module DBUS
                 @user = config["twitter"]["user"]
                 @me = config["twitter"]["me"]
                 @passwd = config["twitter"]["passwd"]
-                @conn = Twitter::Base.new(@user, @passwd)
+                
+                httpauth = Twitter::HTTPAuth.new(@user, @passwd)
+                @conn = Twitter::Base.new(httpauth)
             rescue => e
                 puts "#{$!} => #{e}"
                 return nil
@@ -70,7 +73,7 @@ module DBUS
             end
             return msg
         end
-        
+
         def status=(s)
             return
             begin
