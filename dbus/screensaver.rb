@@ -14,20 +14,20 @@ module DBUS
         def mute()
             return if @vol == 0
 
-            IO.popen("aumix -wq") {|r|
-                r.read.scan(/(\d+)/) {|m|
+            IO.popen("amixer sget Master") { |r|
+                r.read.scan(/Playback (\d+) \[/) {|m|
                     @vol = m
                     puts "saved volume: #{@vol}"
                     break
                 }
             }
             puts "muting"
-            system("aumix -w 0")
+            system("amixer sset Master 0")
         end
         
         def unmute()
             puts "unmuting"
-            system("aumix -w #{@vol}")
+            system("amixer sset Master #{@vol}")
         end
         
         # if there is anything we haven't caught yet, just pass it on down

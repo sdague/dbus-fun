@@ -66,7 +66,13 @@ module DBUS
             msg = ""
             begin
                 puts "Retrieving twitter status"
-                msg = @conn.user(@me).status.text
+                timeline = @conn.user_timeline(@me)
+                timeline.each do |entry|
+                    if not entry.text =~ /^@/
+                        msg = entry.text
+                        break
+                    end
+                end
                 puts "Status #{msg}"
             rescue => e
                 puts "#{$!} => #{e}"

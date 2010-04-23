@@ -4,7 +4,12 @@ module DBUS
         def initialize(bus)
             n_dbus = bus.service("org.freedesktop.NetworkManager")
             netman = n_dbus.object("/org/freedesktop/NetworkManager")
+            # @conn.introspect
             @conn = DBus::ProxyObjectInterface.new(netman, "org.freedesktop.NetworkManager")
+#            if @conn.has_iface? "org.freedesktop.NetworkManager"
+#                @conn.default_iface = "org.freedesktop.NetworkManager"
+#            end
+            return @conn
         end
         
         def Network.ip_to_str(ip)

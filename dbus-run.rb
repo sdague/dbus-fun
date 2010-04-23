@@ -50,7 +50,9 @@ def run()
         s = pidgin.status
         puts "SendImMsg: #{id} - #{who}: #{msg}"
         if who =~ /twitter/ or who =~ /tweet.im/
-            pidgin.active!(msg)
+            if not msg =~ /^(rt|@)/i 
+                pidgin.active!(msg)
+            end
         elsif s.away?
             begin
                 puts "Setting status"
@@ -93,18 +95,14 @@ def run()
     # networkmanager 0.7 both got more useful (broadcasting lots more
     # signals), and less useful, not providing a generic connection
     # signal like it did before.
-    netman.on_signal(system_bus, "StateChanged") { |s|
-        puts "New state #{s}"
-        # this seems to be the magic state
-        if s == 3
-            pidgin.reconnect
-        end
-        # sync_status(pidgin, online)
+    netman.on_signal(system_bus, "PropertiesChanged") { |s|
+        # This means something changed on the networking
+        pidgin.reconnect
     }
 
     main = DBus::Main.new
-    main << system_bus
     main << session_bus
+    main << system_bus
     main.run
 end
 
