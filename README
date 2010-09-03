@@ -1,2 +1,12 @@
 This is my set of random dbus scripts.  It needs a lot of cleaning up,
 but worth getting out there for people.
+
+Twitter and OAuth
+
+Twitter is now using OAuth, which is cool.  They being really dumb
+about validation of the secret token on desktop apps, which is bad.
+
+My client keys are embedded because there is no other way to do it
+with open source applications.  When run the first time it will pop up
+a firefox window to get your token, after you've provided that you'll
+need to added atoken and asecret to your accounts.yaml.

@@ -7,7 +7,7 @@ module DBUS
 
             @services = []
             if s = Status::Twitter.new(file)
-                @services << s
+                    @services << s
             end
             # if s = Status::Identica.new(pidgin, file)
             #     @services << s
@@ -50,12 +50,44 @@ module DBUS
         def initialize(file)
             config = YAML.load_file(file)
             begin
-                @user = config["twitter"]["user"]
+                @atoken = config["twitter"]["atoken"]
+                @asecret = config["twitter"]["asecret"]
+                @token = config["twitter"]["token"]
                 @me = config["twitter"]["me"]
-                @passwd = config["twitter"]["passwd"]
+                @secret = config["twitter"]["secret"]
+             
+                oauth = Twitter::OAuth.new(@token, @secret)
                 
-                httpauth = Twitter::HTTPAuth.new(@user, @passwd)
-                @conn = Twitter::Base.new(httpauth)
+                if not @atoken or not @asecret 
+                    
+                    
+                    pp oauth
+                    rtoken  = oauth.request_token.token
+                    rsecret = oauth.request_token.secret
+                    
+                    
+                    puts "> redirecting you to twitter to authorize..."
+                    %x(firefox #{oauth.request_token.authorize_url})
+                    
+                    print "> what was the PIN twitter provided you with? "
+                    pin = gets.chomp
+                
+                                
+                    oauth.authorize_from_request(rtoken, rsecret, pin)
+                
+                    access_token = oauth.access_token
+                    pp access_token
+                    
+                    puts <<END
+Now put the following into your twitter section of your accounts.yml
+
+atoken = #{access_token.token}
+asecret = #{access_token.secret}
+END
+                else
+                    oauth.authorize_from_access(@atoken, @asecret)
+                end
+                @conn = Twitter::Base.new(oauth)
             rescue => e
                 puts "#{$!} => #{e}"
                 return nil

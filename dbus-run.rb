@@ -27,13 +27,13 @@ def run()
     session_bus = DBus::SessionBus.instance
     
     pidgin = DBUS::Pidgin.new(session_bus)
-    online = DBUS::Status.new(pidgin, "accounts.yaml")
+     online = DBUS::Status.new(pidgin, "accounts.yaml")
     netman = DBUS::Network.new(system_bus)
     
 
     screensaver = DBUS::ScreenSaver.new(session_bus)
     
-    sync_status(pidgin, online)
+    # sync_status(pidgin, online)
 
 #     pidgin.on_signal("AccountStatusChanged") { |id, status, reason|
 #         puts "AccountStatusChanged"
@@ -97,6 +97,7 @@ def run()
     # signal like it did before.
     netman.on_signal(system_bus, "PropertiesChanged") { |s|
         # This means something changed on the networking
+        sleep 1
         pidgin.reconnect
     }
 
