@@ -1,4 +1,5 @@
 require "twitter"
+require "yaml"
 
 module DBUS
     class Status
@@ -56,38 +57,45 @@ module DBUS
                 @me = config["twitter"]["me"]
                 @secret = config["twitter"]["secret"]
              
-                oauth = Twitter::OAuth.new(@token, @secret)
+                Twitter.configure do |config|
+                    config.consumer_key = @token
+                    config.consumer_secret = @secret
+                    config.oauth_token = @atoken
+                    config.oauth_token_secret = @asecret
+                end
                 
-                if not @atoken or not @asecret 
+#                 oauth = Twitter::OAuth.new(@token, @secret)
+                
+#                 if not @atoken or not @asecret 
                     
                     
-                    pp oauth
-                    rtoken  = oauth.request_token.token
-                    rsecret = oauth.request_token.secret
+#                     pp oauth
+#                     rtoken  = oauth.request_token.token
+#                     rsecret = oauth.request_token.secret
                     
                     
-                    puts "> redirecting you to twitter to authorize..."
-                    %x(firefox #{oauth.request_token.authorize_url})
+#                     puts "> redirecting you to twitter to authorize..."
+#                     %x(firefox #{oauth.request_token.authorize_url})
                     
-                    print "> what was the PIN twitter provided you with? "
-                    pin = gets.chomp
+#                     print "> what was the PIN twitter provided you with? "
+#                     pin = gets.chomp
                 
                                 
-                    oauth.authorize_from_request(rtoken, rsecret, pin)
+#                     oauth.authorize_from_request(rtoken, rsecret, pin)
                 
-                    access_token = oauth.access_token
-                    pp access_token
+#                     access_token = oauth.access_token
+#                     pp access_token
                     
-                    puts <<END
-Now put the following into your twitter section of your accounts.yml
+#                     puts <<END
+# Now put the following into your twitter section of your accounts.yml
 
-atoken = #{access_token.token}
-asecret = #{access_token.secret}
-END
-                else
-                    oauth.authorize_from_access(@atoken, @asecret)
-                end
-                @conn = Twitter::Base.new(oauth)
+# atoken = #{access_token.token}
+# asecret = #{access_token.secret}
+# END
+#                 else
+#                     oauth.authorize_from_access(@atoken, @asecret)
+#                 end
+                @conn = Twitter::Client.new
             rescue => e
                 puts "#{$!} => #{e}"
                 return nil
@@ -116,7 +124,7 @@ END
             return
             begin
                 puts "Pushing '#{s}' to twitter"
-                @conn.post(s)
+                @conn.update(s)
             rescue => e
                 puts "#{$!} => #{e}"
             end
